@@ -14,7 +14,6 @@ templates:
   bin/control: bin/control
   bin/cronwatch: bin/cronwatch
   bin/pgbackup: bin/pgbackup
-  bin/pgrestore: bin/pgrestore
   config/pgbackup.cron: config/pgbackup.cron
   shell/env: shell/env
   shell/functions: shell/functions
@@ -23,8 +22,8 @@ properties:
     description: "Enable debug output, can be 'true' or 'false' (default)."
     default: "false"
   pgbackup.name:
-    description: "Name of the backup to create - will be <timestamp>-<name>.tar"
-    default: pgdumpall
+    description: "Name of the backup to create : <name>-<timestamp>.tar"
+    default: "bosh-backup"
   pgbackup.host:
     description: "Hostname or IP address to connect to PostgreSQL on"
     default: "localhost"
@@ -38,8 +37,9 @@ properties:
     description: "Password to authenticate to PostgreSQL with"
     default: "PLEASE-CHANGE-THIS"
   pgbackup.version:
-    description: "Version of PostgreSQL to be backed up/restored"
-    default: "9.5"
+    description: "Version of PostgreSQL to be backed up"
+    default: "POSTGRES_VERSION"
+
 
   pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
@@ -47,10 +47,10 @@ properties:
 
   pgbackup.schedule.minute:
     description: "Backup schedule - minute (00-59)"
-    default: "00"
+    default: "01"
   pgbackup.schedule.hour:
     description: "Backup schedule - hour (00-23)"
-    default: "01"
+    default: "*"
   pgbackup.schedule.monthday:
     description: "Backup schedule - day of the month (1-31, or *)"
     default: "*"
@@ -74,5 +74,5 @@ properties:
     description: "Secret Access key for storing backups in Amazon S3"
     default: ""
   pgbackup.s3.endpoint:
-    description: "endpoint for backup/restore"
+    description: "endpoint for backup"
     default: "s3.amazonaws.com"
