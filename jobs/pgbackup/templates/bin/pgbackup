@@ -4,7 +4,7 @@ chmod 777 ../shell/env
 ../shell/env
 PATH=/var/vcap/bosh/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 set +e # do not want to auto-die - instead, log and continue
-# FIXME: use pgbackup.debug --> Not implemented yet
+# IMPROVEMENTS: use pgbackup.debug --> Not implemented yet
 TIMESTAMP=$(date +%Y/%m/%d/%Y%m%d%H%M%S)
 
 # Environment for postgres commands
