@@ -38,12 +38,49 @@ properties:
     default: "PLEASE-CHANGE-THIS"
   pgbackup.version:
     description: "Version of PostgreSQL to be backed up"
-    default: "POSTGRES_VERSION"
-
-
+    default: "PLEASE-CHANGE-THIS"
   pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
+
+
+  pgbackup.proxy.http.active:
+    description: "set to true if you want to use a proxy.  false is the default value"
+    default: "false"
+  pgbackup.proxy.http.host:
+    description: "Hostname or Ip address of the proxy server, http://your_proxy_server"
+    default: "http://127.0.0.1"
+  pgbackup.proxy.http.port:
+    description: "Port used to achieve the proxy server"
+    default: "8080"
+  pgbackup.proxy.http.user:
+    description: "Username for the proxy server"
+    default: ""
+  pgbackup.proxy.http.password:
+    description: "Password for the proxy server username"
+    default: ""
+
+
+  pgbackup.proxy.https.active:
+    description: "set to true if you want to use a proxy.  false is the default value"
+    default: "false"
+  pgbackup.proxy.https.host:
+    description: "Hostname or Ip address of the proxy server, http(s)://your_proxy_server"
+    default: "http://127.0.0.1"
+  pgbackup.proxy.https.port:
+    description: "Port used to achieve the proxy server"
+    default: "8080"
+  pgbackup.proxy.https.user:
+    description: "Username for the proxy server"
+    default: ""
+  pgbackup.proxy.https.password:
+    description: "Password for the proxy server username"
+    default: ""
+  pgbackup.proxy.https.ssl:
+    description: "activate or not the ssl encryption, default 'false' "
+    default: "false"
+
+
 
   pgbackup.schedule.minute:
     description: "Backup schedule - minute (00-59)"

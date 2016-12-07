@@ -3,13 +3,9 @@
 chmod 777 ../shell/env
 ../shell/env
 PATH=/var/vcap/bosh/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# proxy setting is loaded from the ../shell/env
 set +e # do not want to auto-die - instead, log and continue
 # IMPROVEMENTS: use pgbackup.debug --> Not implemented yet
-TIMESTAMP=$(date +%Y/%m/%d/%Y%m%d%H%M%S)
-
-# Environment for postgres commands
-PGHOST="<%= p('pgbackup.host') %>" # host  for the postgres database url
-PGPASSWORD="<%= p('pgbackup.password') %>" #  port associated with the postgres database url
 
 <%
 pgversion = case p('pgbackup.version')
@@ -29,55 +25,54 @@ else
   "postgres95"
 end
 %>
-
-# ==> pgversion default value will be removed
 PGVERSION="<%= pgversion %>"
-export PGHOST PGPASSWORD PGVERSION
-echo "export PGHOST=$PGHOST"
-echo "export PGVERSION=$PGVERSION"
 
-PG_DUMP="/var/vcap/packages/${PGVERSION}/bin/pg_dump"
-
-GOF3R="/var/vcap/packages/gof3r/bin/gof3r"
-
+# Environment for postgres commands
+PGHOST="<%= p('pgbackup.host') %>" # host  for the postgres database url
+PGPASSWORD="<%= p('pgbackup.password') %>" #  port associated with the postgres database url
+EXTRA_ARG="<%= p(' pgbackup.pgdump.arguments') %>"
 # S3 bucket access credentials
 AWS_ACCESS_KEY_ID="<%= p('pgbackup.s3.access_key_id') %>"
 AWS_SECRET_ACCESS_KEY="<%= p('pgbackup.s3.secret_access_key') %>"
-export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
-# S3 bucket other information
+export PGHOST PGPASSWORD PGVERSION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+
+# S3 bucket other informations
 S3_BUCKET="<%= p('pgbackup.s3.bucket') %>"
 S3_PATH="/<%= p('pgbackup.s3.path') %>"
 S3_ENDPOINT="<%= p('pgbackup.s3.endpoint') %>"
 #get date and time to use it for backup file name
 T=$(date +"%Y-%m-%d__%H-%M")
+PG_DUMP="/var/vcap/packages/${PGVERSION}/bin/pg_dump"
+GOF3R="/var/vcap/packages/gof3r/bin/gof3r"
+DUMP_DIR="/var/vcap/data/pgbackup/"
 
-log () {
-  level=$1
-  msg=$2
-  logger -t "$LOGGER_TAG" -p user.$level "[$T] $msg"
-}
-
-backup_databases() {
+#if ssl encryption is setup to false then ssl_status_opt = --no-ssl
+ssl_status_opt=""
+ssl_status_flag= "<%= pgbackup.proxy.https.ssl %>"
+if [[ "$ssl_status_flag" == "true" ]]; then
+ssl_status_opt="--no-ssl"
+fi
+# ==> all logs are sent to '/var/vcap/log/jobs/pgbackup' (see ../shell/env file)
+function backup_databases() {
         # Acquire a lock to ensure we aren't running simultaneous dumps
-        echo "backup in progress "  > /tmp/backup.lock
-        local opts="--endpoint=${S3_ENDPOINT}"
-        local name="<%= p('pgbackup.name') %>"
+        echo "backup in progress"  > /tmp/backup.lock
+        opts="--endpoint=${S3_ENDPOINT} ${ssl_status_opt}"
+        name="<%= p('pgbackup.name') %>"
         s3_file=$(echo "${name}-$T".gz | sed 's|/\+|/|g' )
         dump_file="$name.dump"
-        ${PG_DUMP} --username="<%= p('pgbackup.username') %>" --port="<%= p('pgbackup.port') %>" -f $dump_file
+        ${PG_DUMP} ${EXTRA_ARG} --username="<%= p('pgbackup.username') %>" --port="<%= p('pgbackup.port') %>" -f "${DUMP_DIR}${dump_file}"
         # Verify the creation of the backup file
         if [[ $? == 0 ]]; then
-                log "ERROR" "$T : Failed to dump database, you may verify the database user/password credentials"
+                echo "ERROR" "$T : Failed to dump database, you may verify the database user/password credentials"
         fi
-        gzip $dump_file
-        mv "$dump_file.gz" $s3_file
-        ${GOF3R}  cp  ${opts} "$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
+        gzip "${DUMP_DIR}$dump_file
+        mv "${DUMP_DIR}"$dump_file.gz" "${DUMP_DIR}$s3_file
+        ${GOF3R}  cp  ${opts} ""${DUMP_DIR}$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
         # ETag-hash comparison always fail, so related error is skipped
         # see more : Etag-hash s3 multipart
         echo "backed up successfully"
-        rm $s3_file
-
+        rm "${DUMP_DIR}$s3_file
 }
 
 
@@ -85,14 +80,15 @@ echo "pgbackup starting up"
 # Test if there is no current backup
 # if a backup.lock file exist then we assume that an other dump is running, so we will retry to backup in the next run
 
-if [ ! -f "/temp/backup.lock" ]; then
+if [ ! -f "/tmp/backup.lock" ]; then
     backup_databases
 else
-    log "WARNING : an other dump is running or the last backup failed , see logs for more details "
+    echo "ERROR" " : an other dump is running or the last backup failed , see logs for more details"
 fi
 
 # release lock for the next run
-rm -f backup.lock
+
+rm -f "/tmp/backup.lock"
 
 echo "pgbackup shutting down"
 exit 0
