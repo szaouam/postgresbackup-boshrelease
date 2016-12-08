@@ -50,15 +50,7 @@ DUMP_DIR="/var/vcap/data/pgbackup/"
 #if ssl encryption is setup to false then ssl_status_opt = --no-ssl
 ssl_status_opt="--no-ssl"
 
-<%= ssl_status = p('pgbackup.proxy.https.ssl)'
-when true, "true"
-  "true"
-else
-  "false"
-%>
-
-ssl_status_flag="<%= ssl_status %>"
-
+ssl_status_flag="<%= p('pgbackup.proxy.https.ssl') %>"
 
 if [[ "$ssl_status_flag" == "true" ]]; then
 ssl_status_opt=""
