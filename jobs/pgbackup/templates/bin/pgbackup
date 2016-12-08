@@ -1,7 +1,7 @@
 #!/bin/bash
 
 chmod 777 ../shell/env
-../shell/env
+. ../shell/env
 PATH=/var/vcap/bosh/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # proxy setting is loaded from the ../shell/env
 set +e # do not want to auto-die - instead, log and continue
@@ -25,6 +25,7 @@ else
   "postgres95"
 end
 %>
+
 PGVERSION="<%= pgversion %>"
 
 # Environment for postgres commands
@@ -45,21 +46,15 @@ S3_ENDPOINT="<%= p('pgbackup.s3.endpoint') %>"
 T=$(date +"%Y-%m-%d__%H-%M")
 PG_DUMP="/var/vcap/packages/${PGVERSION}/bin/pg_dump"
 GOF3R="/var/vcap/packages/gof3r/bin/gof3r"
-DUMP_DIR="/var/vcap/data/pgbackup/"
+DUMP_DIR="/var/vcap/data/jobs/pgbackup/"
 
-#if ssl encryption is setup to false then ssl_status_opt = --no-ssl
-ssl_status_opt="--no-ssl"
 
-ssl_status_flag="<%= p('pgbackup.proxy.https.ssl') %>"
 
-if [[ "$ssl_status_flag" == "true" ]]; then
-ssl_status_opt=""
-fi
-# ==> all logs are sent to '/var/vcap/log/jobs/pgbackup' (see ../shell/env file)
+# ==> all logs are sent to '/var/vcap/log/jobs/pgbackup' (see ../shell/env)
 function backup_databases() {
         # Acquire a lock to ensure we aren't running simultaneous dumps
         echo "backup in progress"  > /tmp/backup.lock
-        local opts="--endpoint=${S3_ENDPOINT} ${ssl_status_opt}"
+        local opts="--endpoint=${S3_ENDPOINT}"
         local name="<%= p('pgbackup.name') %>"
         s3_file=$(echo "${name}-$T".gz | sed 's|/\+|/|g' )
         dump_file="$name.dump"
@@ -75,6 +70,9 @@ function backup_databases() {
         # see more : Etag-hash s3 multipart
         echo "backed up successfully"
         rm ${DUMP_DIR}$s3_file
+        # release the lock for the next run
+        rm -f "/tmp/backup.lock"
+
 }
 
 
@@ -88,9 +86,6 @@ else
     echo "ERROR : an other dump is running or the last backup failed , see logs for more details"
 fi
 
-# release lock for the next run
-
-rm -f "/tmp/backup.lock"
 
 echo "pgbackup shutting down"
 exit 0

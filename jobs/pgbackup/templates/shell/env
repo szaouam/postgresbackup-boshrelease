@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e # exit immediately if a simple command exits with a non-zero status
 set -u # report the usage of uninitialized variables
@@ -45,14 +45,14 @@ http_proxy_password="<%= p('pgbackup.proxy.http.password') %>"
 
 # check the proxy use a username/password authentication
 if [[ "$http_proxy_username" == "" ]] || [[ "$http_proxy_password" == "" ]]; then
-http_proxy="${http_proxy_host}:${http_proxy_port}"
+http_proxy=${http_proxy_host}:${http_proxy_port}
 else
-http_proxy="${http_proxy_username}:${http_proxy_password}@${http_proxy_host}:${http_proxy_port}"
+http_proxy=${http_proxy_username}:${http_proxy_password}@${http_proxy_host}:${http_proxy_port}
 fi
 #--- end HTTP protocol configurations
 
 #--- HTTPS protocol configurations
-https_proxy_is_active= "<%= p('pgbackup.proxy.https.active') %>"
+https_proxy_is_active="<%= p('pgbackup.proxy.https.active') %>"
 #if https proxy is active then export https proxy parameters
 #https proxy parameters
 https_proxy_host="<%= p('pgbackup.proxy.https.host') %>"
@@ -62,18 +62,18 @@ https_proxy_password="<%= p('pgbackup.proxy.https.password') %>"
 
 # check the proxy use a username/password authentication
 if [[ "$https_proxy_username" == "" ]] || [[ "$https_proxy_password" == "" ]]; then
-https_proxy="${https_proxy_host}:${https_proxy_port}"
+https_proxy=${https_proxy_host}:${https_proxy_port}
 else
-https_proxy="${https_proxy_username}:${https_proxy_password}@${https_proxy_host}:${https_proxy_port}"
+https_proxy=${https_proxy_username}:${https_proxy_password}@${https_proxy_host}:${https_proxy_port}
 fi
 #--- end HTTPS protocol configurations
 
 #--- export proxy parameters
 if [[ $http_proxy_is_active == "true" ]]; then
-export http_proxy
+export http_proxy="$http_proxy"
 fi
 if [[ $https_proxy_is_active == "true" ]]; then
-export https_proxy
+export https_proxy="$https_proxy"
 fi
 #--- end export proxy parameters
 
