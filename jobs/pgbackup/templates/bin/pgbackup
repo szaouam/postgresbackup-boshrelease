@@ -30,7 +30,7 @@ PGVERSION="<%= pgversion %>"
 # Environment for postgres commands
 PGHOST="<%= p('pgbackup.host') %>" # host  for the postgres database url
 PGPASSWORD="<%= p('pgbackup.password') %>" #  port associated with the postgres database url
-EXTRA_ARG="<%= p(' pgbackup.pgdump.arguments') %>"
+EXTRA_ARG="<%= p('pgbackup.pgdump.arguments') %>"
 # S3 bucket access credentials
 AWS_ACCESS_KEY_ID="<%= p('pgbackup.s3.access_key_id') %>"
 AWS_SECRET_ACCESS_KEY="<%= p('pgbackup.s3.secret_access_key') %>"
@@ -48,31 +48,31 @@ GOF3R="/var/vcap/packages/gof3r/bin/gof3r"
 DUMP_DIR="/var/vcap/data/pgbackup/"
 
 #if ssl encryption is setup to false then ssl_status_opt = --no-ssl
-ssl_status_opt=""
-ssl_status_flag= "<%= pgbackup.proxy.https.ssl %>"
+ssl_status_opt="-no-ssl"
+ssl_status_flag="<%= p('pgbackup.proxy.https.ssl)' %>"
 if [[ "$ssl_status_flag" == "true" ]]; then
-ssl_status_opt="--no-ssl"
+ssl_status_opt=""
 fi
 # ==> all logs are sent to '/var/vcap/log/jobs/pgbackup' (see ../shell/env file)
 function backup_databases() {
         # Acquire a lock to ensure we aren't running simultaneous dumps
         echo "backup in progress"  > /tmp/backup.lock
-        opts="--endpoint=${S3_ENDPOINT} ${ssl_status_opt}"
-        name="<%= p('pgbackup.name') %>"
+        local opts="--endpoint=${S3_ENDPOINT} ${ssl_status_opt}"
+        local name="<%= p('pgbackup.name') %>"
         s3_file=$(echo "${name}-$T".gz | sed 's|/\+|/|g' )
         dump_file="$name.dump"
         ${PG_DUMP} ${EXTRA_ARG} --username="<%= p('pgbackup.username') %>" --port="<%= p('pgbackup.port') %>" -f "${DUMP_DIR}${dump_file}"
         # Verify the creation of the backup file
-        if [[ $? == 0 ]]; then
-                echo "ERROR" "$T : Failed to dump database, you may verify the database user/password credentials"
+        if [[ $? != 0 ]]; then
+                echo "ERROR Failed to dump database, you may verify the database user/password credentials"
         fi
-        gzip "${DUMP_DIR}$dump_file
-        mv "${DUMP_DIR}"$dump_file.gz" "${DUMP_DIR}$s3_file
-        ${GOF3R}  cp  ${opts} ""${DUMP_DIR}$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
+        gzip "${DUMP_DIR}${dump_file}"
+        mv "${DUMP_DIR}${dump_file}.gz" "${DUMP_DIR}${s3_file}"
+        ${GOF3R}  cp  ${opts} "${DUMP_DIR}$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
         # ETag-hash comparison always fail, so related error is skipped
         # see more : Etag-hash s3 multipart
         echo "backed up successfully"
-        rm "${DUMP_DIR}$s3_file
+        rm ${DUMP_DIR}$s3_file
 }
 
 
@@ -83,7 +83,7 @@ echo "pgbackup starting up"
 if [ ! -f "/tmp/backup.lock" ]; then
     backup_databases
 else
-    echo "ERROR" " : an other dump is running or the last backup failed , see logs for more details"
+    echo "ERROR : an other dump is running or the last backup failed , see logs for more details"
 fi
 
 # release lock for the next run

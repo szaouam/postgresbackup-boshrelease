@@ -35,13 +35,13 @@ pidFile="${runPath}/${jobName}.pid"
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"
 
 #--- HTTP protocol configurations
-http_proxy_is_active="<%= pgbackup.proxy.http.active %>"
+http_proxy_is_active="<%= p('pgbackup.proxy.http.active') %>"
 #if the http proxy is active then export http proxy parameters
 #http proxy parameters
-http_proxy_host="<%= pgbackup.proxy.http.host %>"
-http_proxy_port="<%= pgbackup.proxy.http.port %>"
-http_proxy_username="<%= pgbackup.proxy.http.user %>"
-http_proxy_password="<%= pgbackup.proxy.http.password %>"
+http_proxy_host="<%= p('pgbackup.proxy.http.host') %>"
+http_proxy_port="<%= p('pgbackup.proxy.http.port') %>"
+http_proxy_username="<%= p('pgbackup.proxy.http.user') %>"
+http_proxy_password="<%= p('pgbackup.proxy.http.password') %>"
 
 # check the proxy use a username/password authentication
 if [[ "$http_proxy_username" == "" ]] || [[ "$http_proxy_password" == "" ]]; then
@@ -52,13 +52,13 @@ fi
 #--- end HTTP protocol configurations
 
 #--- HTTPS protocol configurations
-https_proxy_is_active= "<%= pgbackup.proxy.https.active %>"
+https_proxy_is_active= "<%= p('pgbackup.proxy.https.active') %>"
 #if https proxy is active then export https proxy parameters
 #https proxy parameters
-https_proxy_host="<%= pgbackup.proxy.https.host %>"
-https_proxy_port="<%= pgbackup.proxy.https.port %>"
-https_proxy_username="<%= pgbackup.proxy.https.user %>"
-https_proxy_password="<%= pgbackup.proxy.https.password %>"
+https_proxy_host="<%= p('pgbackup.proxy.https.host') %>"
+https_proxy_port="<%= p('pgbackup.proxy.https.port') %>"
+https_proxy_username="<%= p('pgbackup.proxy.https.user') %>"
+https_proxy_password="<%= p('pgbackup.proxy.https.password') %>"
 
 # check the proxy use a username/password authentication
 if [[ "$https_proxy_username" == "" ]] || [[ "$https_proxy_password" == "" ]]; then
@@ -69,10 +69,10 @@ fi
 #--- end HTTPS protocol configurations
 
 #--- export proxy parameters
-if [[ "$http_proxy_is_active" == "true" ]]; then
+if [[ $http_proxy_is_active == "true" ]]; then
 export http_proxy
 fi
-if [[ "$https_proxy_is_active" == "true" ]]; then
+if [[ $https_proxy_is_active == "true" ]]; then
 export https_proxy
 fi
 #--- end export proxy parameters
