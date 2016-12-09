@@ -14,7 +14,7 @@ jobName="pgbackup"
 
 logPath="/var/vcap/sys/log/${jobName}"
 mkdir -p "${logPath}"
-exec &>> "${logPath}/${jobName}.log" # STD{OUT,ERR}
+#exec &>> "${logPath}/${jobName}.log" # STD{OUT,ERR}
 echo -e "$(date +'%Y-%m-%dT%H:%M:%S') $(whoami) > $0 $*"
 
 source /var/vcap/jobs/${jobName}/shell/functions
@@ -27,7 +27,7 @@ runPath="/var/vcap/sys/run/${jobName}"
 tmpPath="/var/vcap/sys/tmp/${jobName}"
 storePath="/var/vcap/store/${jobName}"
 
-userName="vcap" # old : root , changed to vcap
+userName="root" # old : root , changed to vcap
 groupName="root"
 LANG="en_US.UTF-8"
 HOME="${HOME:-"/home/${userName}"}"
