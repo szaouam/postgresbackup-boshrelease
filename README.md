@@ -19,7 +19,9 @@ bosh upload release releases/pgbackup-3.yml
 
 Next edit the manifest file provided with the release (manifest/postgres-backup.yml).
 
-This release support only the Openstack IaaS and the bosh manifest v2.
+This release aims to support bosh v2 manifest. Currently, only Openstack templates are offered by default, 
+support for other Iaas are welcome
+
 ```sh
 cd  manifests
 bosh deployment manifests/postgres-backup.yml
