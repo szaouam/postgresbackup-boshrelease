@@ -14,20 +14,20 @@ cd pgbackup-boshrelease
 ```
 If you intend on using a final release upload it like so:
 ```sh
-bosh upload release releases/pgbackup-3.yml
+bosh upload release releases/pgbackup-1.yml
 ```
 
 Next edit the manifest file provided with the release (manifest/postgres-backup.yml).
 
 This release aims to support bosh v2 manifest. Currently, only Openstack templates are offered by default, 
-support for other Iaas are welcome
+support for other Iaas are welcome.
 
+The first step is to choose under wish bosh you want to use de the postgres-backup release :
 ```sh
-cd  manifests
-bosh deployment manifests/postgres-backup.yml
+bosh deployment your-bosh-deployment.yml
 ```
 
-Add to the list of known `releases: `
+Add to the list of known `releases` :
 
 ```yaml
 releases:
@@ -36,7 +36,7 @@ releases:
 ```
 
 
-Add properties such as tags.
+Add the pgbackup property.
 
 ```yaml
 properties:
