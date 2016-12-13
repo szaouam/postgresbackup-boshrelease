@@ -34,8 +34,8 @@ properties:
     description: "Password to authenticate to PostgreSQL with"
     default: "PLEASE-CHANGE-THIS"
   pgbackup.version:
-    description: "Version of PostgreSQL to be backed up (9.1 , 9.2, 9.3, 9.4 or 9.5)"
-    default: "9.5"
+    description: "Version of PostgreSQL to be backed up (9.0, 9.1 , 9.2, 9.3, 9.4 or 9.5)"
+    default: "PLEASE-CHANGE-THIS"
   pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
