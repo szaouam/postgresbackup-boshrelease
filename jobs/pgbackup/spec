@@ -21,9 +21,6 @@ properties:
   pgbackup.debug:
     description: "Enable debug output, can be 'true' or 'false' (default)."
     default: "false"
-  pgbackup.name:
-    description: "Name of the backup to create : <name>-<timestamp>.tar"
-    default: "bosh-backup"
   pgbackup.host:
     description: "Hostname or IP address to connect to PostgreSQL on"
     default: "localhost"

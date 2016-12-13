@@ -50,20 +50,23 @@ DUMP_DIR="/var/vcap/data/jobs/pgbackup/"
 
 
 
-# ==> all logs are sent to '/var/vcap/log/jobs/pgbackup' (see ../shell/env)
+
 function backup_databases() {
         # Acquire a lock to ensure we aren't running simultaneous dumps
         echo "backup in progress"  > /tmp/backup.lock
         local opts="--endpoint=${S3_ENDPOINT}"
-        local name="<%= p('pgbackup.name') %>"
-        s3_file=$(echo "${name}-$T".gz | sed 's|/\+|/|g' )
-        dump_file="$name.dump"
+        local name="director_db"
+        s3_file=$(echo "${name}-$T".tgz | sed 's|/\+|/|g' )
+        dump_file="$name.sql"
         ${PG_DUMP} ${EXTRA_ARG} --username="<%= p('pgbackup.username') %>" --port="<%= p('pgbackup.port') %>" -f "${DUMP_DIR}${dump_file}"
         # Verify the creation of the backup file
         if [[ $? != 0 ]]; then
                 echo "ERROR Failed to dump database, you may verify the database user/password credentials"
         fi
         gzip "${DUMP_DIR}${dump_file}"
+        cd ${DUMP_DIR}
+        tar -zcf "${dump_file}.tgz" "${dump_file}"
+        cd - # return to the previous directory
         mv "${DUMP_DIR}${dump_file}.gz" "${DUMP_DIR}${s3_file}"
         ${GOF3R}  cp  ${opts} "${DUMP_DIR}$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
         # ETag-hash comparison always fail, so related error is skipped
