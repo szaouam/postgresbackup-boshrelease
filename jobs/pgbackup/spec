@@ -14,6 +14,7 @@ templates:
   bin/control: bin/control
   bin/cronwatch: bin/cronwatch
   bin/pgbackup: bin/pgbackup
+  bin/pgrestore: bin/pgrestore
   config/pgbackup.cron: config/pgbackup.cron
   shell/env: shell/env
   shell/functions: shell/functions
@@ -21,68 +22,32 @@ properties:
   pgbackup.debug:
     description: "Enable debug output, can be 'true' or 'false' (default)."
     default: "false"
+  pgbackup.name:
+    description: "Name of the backup to create - will be <timestamp>-<name>.tar"
+    default: pgdumpall
   pgbackup.host:
     description: "Hostname or IP address to connect to PostgreSQL on"
-    default: "localhost"
+    default: "127.0.0.1"
   pgbackup.port:
     description: "TCP port to connect to PostgreSQL on"
-    default: 5432
   pgbackup.username:
     description: "User to connect to PostgreSQL as"
-    default: "bosh"
   pgbackup.password:
     description: "Password to authenticate to PostgreSQL with"
-    default: "PLEASE-CHANGE-THIS"
   pgbackup.version:
-    description: "Version of PostgreSQL to be backed up (9.0, 9.1 , 9.2, 9.3, 9.4 or 9.5)"
-    default: "PLEASE-CHANGE-THIS"
+    description: "Version of PostgreSQL to be backed up/restored"
+    default: "9.5"
+
   pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
 
-
-  pgbackup.proxy.http.active:
-    description: "set to true if you want to use a proxy.  false is the default value"
-    default: "false"
-  pgbackup.proxy.http.host:
-    description: "Hostname or Ip address of the proxy server, http://your_proxy_server"
-    default: "127.0.0.1"
-  pgbackup.proxy.http.port:
-    description: "Port used to achieve the proxy server"
-    default: "3128"
-  pgbackup.proxy.http.user:
-    description: "Username for the proxy server"
-    default: ""
-  pgbackup.proxy.http.password:
-    description: "Password for the proxy server username"
-    default: ""
-
-
-  pgbackup.proxy.https.active:
-    description: "set to true if you want to use a proxy.  false is the default value"
-    default: "false"
-  pgbackup.proxy.https.host:
-    description: "Hostname or Ip address of the proxy server, http(s)://your_proxy_server"
-    default: "127.0.0.1"
-  pgbackup.proxy.https.port:
-    description: "Port used to achieve the proxy server"
-    default: "3128"
-  pgbackup.proxy.https.user:
-    description: "Username for the proxy server"
-    default: ""
-  pgbackup.proxy.https.password:
-    description: "Password for the proxy server username"
-    default: ""
-
-
-
-
   pgbackup.schedule.minute:
     description: "Backup schedule - minute (00-59)"
-    default: "01"
+    default: "00"
   pgbackup.schedule.hour:
     description: "Backup schedule - hour (00-23)"
-    default: "*"
+    default: "01"
   pgbackup.schedule.monthday:
     description: "Backup schedule - day of the month (1-31, or *)"
     default: "*"
@@ -94,17 +59,40 @@ properties:
     default: "*"
 
   pgbackup.s3.bucket:
-    description: "Amazon S3 bucket to store backups in"
-    default: "pgbackup"
+    description: "S3 bucket to store backups in"
   pgbackup.s3.path:
     description: "Path to prepend to backup filenames when storing in Amazon S3"
-    default: ""
+    default: "\"
   pgbackup.s3.access_key_id:
     description: "Access Key ID for storing backups in Amazon S3"
-    default: ""
   pgbackup.s3.secret_access_key:
     description: "Secret Access key for storing backups in Amazon S3"
-    default: ""
   pgbackup.s3.endpoint:
-    description: "endpoint for backup"
-    default: "s3.amazonaws.com"
+    description: "endpoint for backup/restore"
+
+
+ pgbackup.s3.proxy.http.host:
+    description: "Hostname or Ip address of the proxy server, http://your_proxy_server"
+    default: ""
+  pgbackup.s3.proxy.http.port:
+    description: "Port used to achieve the proxy server"
+    default: "3128"
+  pgbackup.s3.proxy.http.user:
+    description: "Username for the proxy server"
+    default: ""
+  pgbackup.s3.proxy.http.password:
+    description: "Password for the proxy server username"
+    default: ""
+
+  pgbackup.s3.proxy.https.host:
+    description: "Hostname or Ip address of the proxy server, http(s)://your_proxy_server"
+    default: ""
+  pgbackup.s3.proxy.https.port:
+    description: "Port used to achieve the proxy server"
+    default: "3128"
+  pgbackup.s3.proxy.https.user:
+    description: "Username for the proxy server"
+    default: ""
+  pgbackup.s3.proxy.https.password:
+    description: "Password for the proxy server username"
+    default: ""

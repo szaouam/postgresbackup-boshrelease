@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+s3=${1:?Usage: $0 <file>}
+
+# Environment for postgres commands
+PGHOST="<%= p('pgbackup.host') %>"
+PGPORT="<%= p('pgbackup.port') %>"
+PGUSER="<%= p('pgbackup.username') %>"
+PGPASSWORD="<%= p('pgbackup.password') %>"
+
+<%
+pgversion = case p('pgbackup.version')
+when 9.5, "9.5"
+  "postgres95"
+when 9.4, "9.4"
+  "postgres94"
+when 9.3, "9.3"
+  "postgres93"
+when 9.2, "9.2"
+  "postgres92"
+when 9.1, "9.1"
+  "postgres91"
+when 9.0, "9.0"
+  "postgres90"
+else
+  "postgres95"
+end
+%>
+
+PGVERSION="<%= pgversion %>"
+export PGHOST PGPORT PGUSER PGPASSWORD PGVERSION
+echo "set PGHOST=$PGHOST"
+echo "set PGPORT=$PGPORT"
+echo "set PGUSER=$PGUSER"
+echo "set PGVERSION=$PGVERSION"
+
+# activate debug mode will enable storing password in logs file,
+# don't forget to disable it
+if [[ $debug_mode == "true" ]]; then
+echo "(debug mode) export  PGPASSWORD=$PGPASSWORD"
+set -x
+fi
+
+PG_RESTORE="/var/vcap/packages/${PGVERSION}/bin/psql"
+GOF3R="/var/vcap/packages/gof3r/bin/gof3r"
+
+AWS_ACCESS_KEY_ID="<%= p('pgbackup.s3.access_key_id') %>"
+AWS_SECRET_ACCESS_KEY="<%= p('pgbackup.s3.secret_access_key') %>"
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+
+S3_BUCKET="<%= p('pgbackup.s3.bucket') %>"
+S3_ENDPOINT="<%= p('pgbackup.s3.endpoint') %>"
+
+# extra 'cat' in the pipeline is necessary because pg_restore closes stdin
+# which gof3r does not expect, and consequently panics...
+${GOF3R} get --endpoint "${S3_ENDPOINT}" -b ${S3_BUCKET} -k "${s3}" | gunzip -c | ${PG_RESTORE} -d postgres
+
+if [[ $? == 0 ]]; then
+	echo "Restoration complete!"
+else
+	echo "Failed to restore!"
+fi
+
+exit 0

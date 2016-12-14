@@ -2,7 +2,7 @@
 set -e
 
 package="gof3r"
-version="0.4.10"
+version="0.5.0"
 file="${package}-${version}.tar.gz"
 
 tar zxvf ${package}/${file}
