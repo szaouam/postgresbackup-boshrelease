@@ -35,3 +35,7 @@ postgres95/postgresql-9.5beta1.tar.gz:
   object_id: 2c204877-0297-48e6-901e-bf5331442a94
   sha: 6a5fe49efb50e235044dc9abdf4c12c423696d0d
   size: 23836877
+gof3r/gof3r-0.5.0.tar.gz:
+  object_id: 1591f857-2df5-4ac0-911d-88e86177543f
+  sha: 9cbf1191604d66a174b078e54c20ea9ab1685742
+  size: 2555335
