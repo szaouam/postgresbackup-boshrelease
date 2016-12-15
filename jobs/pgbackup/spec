@@ -30,10 +30,13 @@ properties:
     default: "127.0.0.1"
   pgbackup.port:
     description: "TCP port to connect to PostgreSQL on"
+    default: 5432
   pgbackup.username:
     description: "User to connect to PostgreSQL as"
+    default: "PLEASE-CHANGE-THIS"
   pgbackup.password:
     description: "Password to authenticate to PostgreSQL with"
+    default: "PLEASE-CHANGE-THIS"
   pgbackup.version:
     description: "Version of PostgreSQL to be backed up/restored"
     default: "9.5"
@@ -60,39 +63,27 @@ properties:
 
   pgbackup.s3.bucket:
     description: "S3 bucket to store backups in"
+    default: "pgbackup"
   pgbackup.s3.path:
     description: "Path to prepend to backup filenames when storing in Amazon S3"
-    default: "\"
+    default: ""
   pgbackup.s3.access_key_id:
     description: "Access Key ID for storing backups in Amazon S3"
   pgbackup.s3.secret_access_key:
     description: "Secret Access key for storing backups in Amazon S3"
   pgbackup.s3.endpoint:
-    description: "endpoint for backup/restore"
+    description: "Endpoint for backup/restore"
 
 
- pgbackup.s3.proxy.http.host:
+  pgbackup.s3.proxy.host:
     description: "Hostname or Ip address of the proxy server, http://your_proxy_server"
     default: ""
-  pgbackup.s3.proxy.http.port:
+  pgbackup.s3.proxy.port:
     description: "Port used to achieve the proxy server"
     default: "3128"
-  pgbackup.s3.proxy.http.user:
-    description: "Username for the proxy server"
+  pgbackup.s3.proxy.user:
+    description: "Username used in http proxy basic authentication"
     default: ""
-  pgbackup.s3.proxy.http.password:
-    description: "Password for the proxy server username"
-    default: ""
-
-  pgbackup.s3.proxy.https.host:
-    description: "Hostname or Ip address of the proxy server, http(s)://your_proxy_server"
-    default: ""
-  pgbackup.s3.proxy.https.port:
-    description: "Port used to achieve the proxy server"
-    default: "3128"
-  pgbackup.s3.proxy.https.user:
-    description: "Username for the proxy server"
-    default: ""
-  pgbackup.s3.proxy.https.password:
-    description: "Password for the proxy server username"
+  pgbackup.s3.proxy.password:
+    description: "Password used in http proxy basic authentication"
     default: ""
