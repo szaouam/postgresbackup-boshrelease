@@ -86,11 +86,11 @@ fi
 
 # daily check the existing of a non removed lock and remove if
 daily_clear_lock(){
-hour=date+"%H"
-if [[ $hour == "01" ]]; then
+current_day=`date +"%d"`
+file_creation_day= `ls -al /tmp/backup.lock | cut -d' ' -f7`
+if [[ $current_day!=file_creation_day ]]; then
     rm -f "/tmp/backup.lock"
 fi
-
 }
 
 backup_databases() {
