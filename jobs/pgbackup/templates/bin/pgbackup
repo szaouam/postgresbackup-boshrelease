@@ -86,17 +86,17 @@ fi
 
 # daily check the existing of a non removed lock and remove if
 daily_clear_lock(){
-hour=date+"%H"
-if [[ $hour == "01" ]]; then
+current_day=`date +"%d"`
+file_creation_day= `ls -al /tmp/backup.lock | cut -d' ' -f7`
+if [[ $current_day!=file_creation_day ]]; then
     rm -f "/tmp/backup.lock"
 fi
-
 }
 
 backup_databases() {
     # Acquire a lock to ensure we aren't running simultaneous dumps
     echo "backup in progress"  > /tmp/backup.lock
-	local opts="-c --no-password <%= p('pgbackup.pgdump.arguments') %>"
+	local opts="-c --no-password <%= p('pgbackup.pgdumpall.arguments') %>"
 	local name="<%= p('pgbackup.name') %>"
 
 	s3_file=$(echo "${S3_PATH}/${TIMESTAMP}-${name}.gz" | sed 's|/\+|/|g')
@@ -112,19 +112,56 @@ backup_databases() {
 	rm -f "/tmp/backup.lock"
 }
 
-echo "pgbackup starting up"
+
+
+backup_single_database(){
+    # override environment variables needed for pg_dump
+    PG_DUMP="/var/vcap/packages/${PGVERSION}/bin/pg_dump"
+    PGHOST="<%= p('pgbackup.pgdump.host') %>"
+    PGPORT="<%= p('pgbackup.pgdump.port') %>"
+    PGUSER="<%= p('pgbackup.pgdump.username') %>"
+    PGPASSWORD="<%= p('pgbackup.pgdump.password') %>"
+
+    export PGHOST PGPORT PGUSER PGPASSWORD PGVERSION
+
+    # Acquire a lock to ensure we aren't running simultaneous dumps
+    echo "backup in progress"  > /tmp/backup.lock
+    local opts="--endpoint=${S3_ENDPOINT}"
+    local name="<%= p('pgbackup.name') %>"
+    s3_file=$(echo "${S3_PATH}/${TIMESTAMP}-${name}.gz" | sed 's|/\+|/|g')
+    dump_file="$name.dump"
+    ${PG_DUMP} ${EXTRA_ARG}  -f "${DUMP_DIR}${dump_file}"
+    # Verify the creation of the backup file
+    if [[ $? != 0 ]]; then
+        echo "ERROR Failed to dump database, you may verify the database user/password credentials"
+    fi
+    gzip "${DUMP_DIR}${dump_file}"
+    mv "${DUMP_DIR}${dump_file}.gz" "${DUMP_DIR}${s3_file}"
+    ${GOF3R}  cp  ${opts} "${DUMP_DIR}$s3_file" s3://"$S3_BUCKET/$s3_file" >/dev/null 2>&1
+    # ETag-hash comparison always fail, so related error is skipped
+    # see more : Etag-hash s3 multipart
+    echo "backed up successfully"
+    rm ${DUMP_DIR}$s3_file
+    # release the lock for the next run
+    rm -f "/tmp/backup.lock"
+}
 
 
 # if the backup process fail the .lock file will be not removed.
-# We wait until tomorrow to automatically release the lock
+# We wait until tomorrow before releasing the lock
 daily_clear_lock
 
 # if a backup.lock file exist then we assume that an other dump is running, so we will retry to backup in the next run
 if [ ! -f "/tmp/backup.lock" ]; then
-    backup_databases
+    single_backup="<%= p('pgbackup.pgdump.host') %>"
+    if [[ "$single_backup" != "" ]];then
+        backup_single_database
+    else
+        backup_databases
+    fi
 else
     echo "ERROR : an other dump is running or the last backup failed , see logs for more details"
-    echo "Next backup attempt will be done tomorrow"
+    echo "Next backup attempt will be done after 24 hours"
 fi
 
 echo "pgbackup shutting down"
