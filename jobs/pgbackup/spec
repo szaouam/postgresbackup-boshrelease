@@ -40,9 +40,8 @@ properties:
   pgbackup.version:
     description: "Version of PostgreSQL to be backed up/restored"
     default: "9.5"
-
-  pgbackup.pgdumpall.arguments:
-    description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
+  pgbackup.arguments:
+    description: "Extra arguments to pass to PostgreSQL's pg_dumpall utility"
     default: ""
 
   pgbackup.schedule.minute:
@@ -91,9 +90,6 @@ properties:
   pgbackup.pgdump.debug:
     description: "Enable debug output, can be 'true' or 'false' (default)."
     default: "false"
-  pgbackup.pgdump.name:
-    description: "Name of the backup to create - will be <timestamp>-<name>.tar"
-    default: pgdump
   pgbackup.pgdump.host:
     description: "Hostname or IP address to connect to PostgreSQL on"
     default: ""
@@ -106,6 +102,12 @@ properties:
   pgbackup.pgdump.password:
     description: "Password to authenticate to PostgreSQL with"
     default: "PLEASE-CHANGE-THIS"
+  pgbackup.pgdump.database:
+       description: "Name of database to backup"
+       default: "PLEASE-CHANGE-THIS"
+  pgbackup.pgdumpall.arguments:
+    description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
+    default: ""
   pgbackup.pgdump.version:
     description: "Version of PostgreSQL to be backed up/restored"
     default: "9.5"
