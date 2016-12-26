@@ -41,7 +41,7 @@ properties:
     description: "Version of PostgreSQL to be backed up/restored"
     default: "9.5"
 
-  pgbackup.pgdump.arguments:
+  pgbackup.pgdumpall.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
 
@@ -87,3 +87,25 @@ properties:
   pgbackup.s3.proxy.password:
     description: "Password used in http proxy basic authentication"
     default: ""
+
+  pgbackup.pgdump.debug:
+    description: "Enable debug output, can be 'true' or 'false' (default)."
+    default: "false"
+  pgbackup.pgdump.name:
+    description: "Name of the backup to create - will be <timestamp>-<name>.tar"
+    default: pgdump
+  pgbackup.pgdump.host:
+    description: "Hostname or IP address to connect to PostgreSQL on"
+    default: ""
+  pgbackup.pgdump.port:
+    description: "TCP port to connect to PostgreSQL on"
+    default: 5432
+  pgbackup.pgdump.username:
+    description: "User to connect to PostgreSQL as"
+    default: "PLEASE-CHANGE-THIS"
+  pgbackup.pgdump.password:
+    description: "Password to authenticate to PostgreSQL with"
+    default: "PLEASE-CHANGE-THIS"
+  pgbackup.pgdump.version:
+    description: "Version of PostgreSQL to be backed up/restored"
+    default: "9.5"
