@@ -105,7 +105,7 @@ properties:
   pgbackup.pgdump.database:
        description: "Name of database to backup"
        default: "PLEASE-CHANGE-THIS"
-  pgbackup.pgdumpall.arguments:
+  pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
   pgbackup.pgdump.version:
