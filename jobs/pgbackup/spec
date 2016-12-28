@@ -103,8 +103,8 @@ properties:
     description: "Password to authenticate to PostgreSQL with"
     default: "PLEASE-CHANGE-THIS"
   pgbackup.pgdump.database:
-       description: "Name of database to backup"
-       default: "PLEASE-CHANGE-THIS"
+    description: "Name of database to backup"
+    default: "PLEASE-CHANGE-THIS"
   pgbackup.pgdump.arguments:
     description: "Extra arguments to pass to PostgreSQL's pg_dump utility"
     default: ""
