@@ -60,7 +60,7 @@ bosh -n deploy
 
 ##Multiple database backup
 
-This release can be used to backup multiple database. If you have n databases to backup, you can create n instances, each one of them will backup one specified database from a specified host.
+This release can be used to backup multiple databases. If you have n databases to backup, you can create n instances, each one of them will backup one specified database from a specified host.
 
 To use this feature, you need to deploy the postgresbackup-boshrelease using the bosh manifest v2(see. templates/postgres-backup-v2.yml ).
 
