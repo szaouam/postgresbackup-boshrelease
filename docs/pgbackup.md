@@ -22,8 +22,8 @@ Next edit the manifest file provided with the release (manifest/postgres-backup.
 
 This release aims to support both v1 and v2 manifest. Currently, only Openstack templates are offered by default, 
 support for other Iaas are welcome.
+You'll need to edit the manifest of the deployment to amend. You may choose to download the manifest from bosh director, or modify a version you saved into you version control. 
 
-The first step is to choose under wish bosh you want to use de the postgres-backup release :
 ```sh
 bosh deployment your-bosh-deployment.yml
 ```
