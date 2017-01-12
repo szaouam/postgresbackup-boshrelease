@@ -62,10 +62,10 @@ properties:
     default: "*"
 
   pgbackup.s3.bucket:
-    description: "Amazon S3 bucket to store backups in"
+    description: "S3 bucket to store backups in"
     default: "pgbackup"
   pgbackup.s3.path:
-    description: "Path to prepend to backup filenames when storing in Amazon S3"
+    description: "Path to prepend to backup filenames when storing in S3 storage"
     default: ""
   pgbackup.s3.access_key_id:
     description: "Access Key ID for storing backups in Amazon S3"
