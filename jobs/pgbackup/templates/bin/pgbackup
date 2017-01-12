@@ -123,8 +123,8 @@ daily_clear_lock
 if [ ! -f "/tmp/backup.lock" ]; then
     backup_databases
 else
-    echo "ERROR : an other dump is running or the last backup failed , see logs for more details"
-    echo "Next backup attempt will be done tomorrow"
+    echo "ERROR : another dump is still running skipping this backup, see logs for more details"
+  
 fi
 
 echo "pgbackup shutting down"
