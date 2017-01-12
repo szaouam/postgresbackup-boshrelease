@@ -78,14 +78,14 @@ properties:
     default: "s3.amazonaws.com"
 
   pgbackup.s3.proxy.host:
-    description: "Hostname or Ip address of the proxy server, http://your_proxy_server.Hostname or Ip address of the proxy server, http://your_proxy_server. Set an empty string to not configure any proxy (this is the default)."
+    description: "Hostname or Ip address of the proxy server, http://your_proxy_server. Set an empty string to not configure any proxy (this is the default)."
     default: ""
   pgbackup.s3.proxy.port:
     description: "Port used to achieve the proxy server"
     default: "3128"
   pgbackup.s3.proxy.user:
-    description: "Username used in http proxy basic authentication.Username used in http proxy basic authentication. Setting an empty string will skip proxy authentication (this is the default)."
+    description: "Username used in http proxy basic authentication. Setting an empty string will skip proxy authentication (this is the default)."
     default: ""
   pgbackup.s3.proxy.password:
-    description: "Password used in http proxy basic authentication.Password used in http proxy basic authentication. Setting an empty string will skip proxy authentication (this is the default)."
+    description: "Password used in http proxy basic authentication. Setting an empty string will skip proxy authentication (this is the default)."
     default: ""
