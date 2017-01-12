@@ -62,18 +62,20 @@ properties:
     default: "*"
 
   pgbackup.s3.bucket:
-    description: "S3 bucket to store backups in"
+    description: "Amazon S3 bucket to store backups in"
     default: "pgbackup"
   pgbackup.s3.path:
     description: "Path to prepend to backup filenames when storing in Amazon S3"
     default: ""
   pgbackup.s3.access_key_id:
     description: "Access Key ID for storing backups in Amazon S3"
+    default: ""
   pgbackup.s3.secret_access_key:
     description: "Secret Access key for storing backups in Amazon S3"
+    default: ""
   pgbackup.s3.endpoint:
-    description: "Endpoint for backup/restore"
-
+    description: "endpoint for backup/restore"
+    default: "s3.amazonaws.com"
 
   pgbackup.s3.proxy.host:
     description: "Hostname or Ip address of the proxy server, http://your_proxy_server"
