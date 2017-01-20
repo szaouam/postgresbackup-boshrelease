@@ -78,10 +78,10 @@ S3_ENDPOINT="<%= p('pgbackup.s3.endpoint') %>"
 # which gof3r does not expect, and consequently panics...
 
 #if the name of the single database is set, we assume that we will restore the same database that we backup before
-single_database_name=""
-single_database_name="<%= p('pgbackup.pgdump.database') %>"
-if [[ $single_database_name != "" ]]; then
-PGDATABASE="<%= p('pgbackup.pgdump.database') %>"
+cmd_name=""
+cmd_name="<%= p('pgbackup.cmdname') %>"
+if [[ $single_database_name == "pgdump" ]]; then
+PGDATABASE="<%= p('pgbackup.dbname') %>"
 export PGDATABASE
 # backup only the selected database
 ${GOF3R} get --endpoint "${S3_ENDPOINT}" -b ${S3_BUCKET} -k "${s3}" | gunzip -c | ${PG_RESTORE}

@@ -117,35 +117,16 @@ backup_single_database(){
     # override environment variables needed for pg_dump
 
     PG_DUMP="/var/vcap/packages/${PGVERSION}/bin/pg_dump"
-    PGHOST="<%= p('pgbackup.pgdump.host') %>"
-    PGPORT="<%= p('pgbackup.pgdump.port') %>"
-    PGUSER="<%= p('pgbackup.pgdump.username') %>"
-    PGPASSWORD="<%= p('pgbackup.pgdump.password') %>"
-    PGDATABASE="<%= p('pgbackup.pgdump.database') %>"
-    export PGHOST PGPORT PGUSER PGPASSWORD PGVERSION PGDATABASE
 
-    echo "export PGHOST=$PGHOST"
-    echo "export PGPORT=$PGPORT"
-    echo "export PGUSER=$PGUSER"
-    echo "export PGVERSION=$PGVERSION"
+    PGDATABASE="<%= p('pgbackup.dbname') %>"
+    export PGDATABASE
     echo "export PGDATABASE=$PGDATABASE"
-    echo "export S3_ENDPOINT=$S3_ENDPOINT"
-
-    # activate debug mode implies storing passwords in logs file,
-    # don't forget to disable it
-    debug_mode="<%= p('pgbackup.pgdump.debug') %>"
-    if [[ $debug_mode == "true" ]]; then
-    echo "(debug mode) export  PGPASSWORD=$PGPASSWORD"
-    echo "(debug mode) export  AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
-    echo "(debug mode) export  AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
-    set -x
-    fi
     # backup process
-    local opts="<%= p('pgbackup.pgdump.arguments') %>"
+    local opts="<%= p('pgbackup.arguments') %>"
     # Acquire a lock to ensure we aren't running simultaneous dumps
     echo "backup in progress"  > /tmp/backup.lock
 
-    local name="<%= p('pgbackup.pgdump.database') %>"
+    local name="<%= p('pgbackup.dbname') %>"
     s3_file=$(echo "${S3_PATH}/${TIMESTAMP}-${name}.gz" | sed 's|/\+|/|g')
 	echo ">> ${PG_DUMP} ${opts} -> S3 ${S3_BUCKET}:${s3_file}"
 	${PG_DUMP} ${opts} | gzip | ${GOF3R} put --endpoint  "${S3_ENDPOINT}" -b ${S3_BUCKET} -k "${s3_file}" >/dev/null 2>&1
@@ -168,8 +149,8 @@ daily_clear_lock
 
 # if a backup.lock file exist then we assume that an other dump is running, so we will retry to backup in the next run
 if [ ! -f "/tmp/backup.lock" ]; then
-    single_backup="<%= p('pgbackup.pgdump.host') %>"
-    if [[ "$single_backup" != "" ]];then
+    cmd_name="<%= p('pgbackup.cmdname') %>"
+    if [[ "$cmd_name" == "pgdump" ]];then
         backup_single_database
     else
         backup_databases
